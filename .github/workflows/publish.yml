@@ -20,6 +20,8 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
           cache: "npm"
+      - run: bash install_emscripten.sh
+      - run: npm install
       - run: npm publish --access=public --tag=next
         if: ${{ github.event.release.prerelease }}
         env:

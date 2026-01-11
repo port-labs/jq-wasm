@@ -7,7 +7,7 @@
     "scripts": {
         "build:dev": "bash -c '. /opt/emsdk/emsdk_env.sh && make browser'",
         "build:full": "bash -c '. /opt/emsdk/emsdk_env.sh && make build_deps && make browser'",
-        "install": "npm run build:full",
+        "install": "bash -c 'npm run build:full'",
         "start": "pushd test_server && node index"
     },
     "keywords": [

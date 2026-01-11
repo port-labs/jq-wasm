@@ -2,9 +2,10 @@ const http = require("http");
 const fs = require("fs");
 
 const server = http.createServer((req, res) => {
-  const path = req.url.startsWith("/jq.browser")
-    ? "../dist" + req.url
-    : "." + req.url;
+  const path =
+    req.url === "/index.js" || req.url === "/index.wasm"
+      ? "../dist" + req.url
+      : "." + req.url;
 
   const contents = fs.readFileSync(path);
 

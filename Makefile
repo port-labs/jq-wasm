@@ -106,85 +106,18 @@ else
 	CFLAGS += -O2 -DNDEBUG
 endif
 
-# Default target
-.PHONY: all
-all: $(OUT_DIR) $(WASM_OUTPUT)
-
-# Create output directory
-$(OUT_DIR):
-	mkdir -p $(OUT_DIR)
-
-# Build WASM module (CommonJS style)
-$(WASM_OUTPUT): $(ALL_SOURCES) | $(OUT_DIR)
-	$(CC) $(CFLAGS) $(EMFLAGS) \
-		-s ENVIRONMENT='web,webview,worker,node' \
-		$(ALL_SOURCES) \
-		-o $@
-
-# Build ES6 module variant
-.PHONY: esm
-esm: $(OUT_DIR) $(WASM_ES6_OUTPUT)
-
-
-$(WASM_ES6_OUTPUT): $(ALL_SOURCES) | $(OUT_DIR)
-	$(CC) $(CFLAGS) $(EMFLAGS) \
-		-s ENVIRONMENT='web,webview,worker,node' \
-		-s EXPORT_ES6=1 \
-		$(ALL_SOURCES) \
-		-o $@
-
 # Build for browser only (smaller output)
 .PHONY: browser
 browser: $(OUT_DIR)
 	$(CC) $(CFLAGS) $(EMFLAGS) \
 		-s ENVIRONMENT='web,webview,worker' \
 		$(ALL_SOURCES) \
-		-o $(OUT_DIR)/jq.browser.js
-
-# Build for Node.js only
-.PHONY: node
-node: $(OUT_DIR)
-	$(CC) $(CFLAGS) $(EMFLAGS) \
-		-s ENVIRONMENT='node' \
-		$(ALL_SOURCES) \
-		-o $(OUT_DIR)/jq.node.js
-
-# Build single-file version (WASM embedded in JS)
-.PHONY: single
-single: $(OUT_DIR)
-	$(CC) $(CFLAGS) $(EMFLAGS) \
-		-s SINGLE_FILE=1 \
-		-s ENVIRONMENT='web,webview,worker,node' \
-		$(ALL_SOURCES) \
-		-o $(OUT_DIR)/jq.single.js
-
-# Build all variants
-.PHONY: all-variants
-all-variants: all esm browser node single
+		-o $(OUT_DIR)/index.js
 
 # Clean build artifacts
 .PHONY: clean
 clean:
 	rm -rf $(OUT_DIR)
-
-# Install Emscripten (helper target)
-.PHONY: install-emsdk
-install-emsdk:
-	@echo "To install Emscripten SDK:"
-	@echo ""
-	@echo "  # Clone emsdk"
-	@echo "  git clone https://github.com/emscripten-core/emsdk.git"
-	@echo "  cd emsdk"
-	@echo ""
-	@echo "  # Install and activate latest SDK"
-	@echo "  ./emsdk install latest"
-	@echo "  ./emsdk activate latest"
-	@echo ""
-	@echo "  # Set up environment (add to shell profile)"
-	@echo "  source ./emsdk_env.sh"
-	@echo ""
-	@echo "Or install via Homebrew (macOS):"
-	@echo "  brew install emscripten"
 
 # Test build
 .PHONY: test
@@ -205,25 +138,3 @@ test: all
 			} \
 		}); \
 	"
-
-.PHONY: help
-help:
-	@echo "jq WebAssembly Build System"
-	@echo ""
-	@echo "Targets:"
-	@echo "  all           - Build default WASM module (CommonJS)"
-	@echo "  esm           - Build ES6 module variant"
-	@echo "  browser       - Build browser-only version (smaller)"
-	@echo "  node          - Build Node.js-only version"
-	@echo "  single        - Build single-file version (WASM embedded)"
-	@echo "  all-variants  - Build all module variants"
-	@echo "  clean         - Remove build artifacts"
-	@echo "  test          - Build and run simple test"
-	@echo "  help          - Show this help message"
-	@echo ""
-	@echo "Options:"
-	@echo "  DEBUG=1       - Build with debug symbols and assertions"
-	@echo ""
-	@echo "Requirements:"
-	@echo "  - Emscripten SDK (emcc) must be in PATH"
-	@echo "  - Run 'make install-emsdk' for installation instructions"

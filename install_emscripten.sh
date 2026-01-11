@@ -1,10 +1,10 @@
-pushd /opt
+cd /opt
 sudo mkdir emsdk
 sudo chown $(whoami) emsdk
 git clone https://github.com/emscripten-core/emsdk.git
-pushd emsdk
+cd emsdk
 git pull
 ./emsdk install latest
 ./emsdk activate latest
-popd
-popd
+cd ../
+cd ../

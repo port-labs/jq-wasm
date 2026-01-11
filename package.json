@@ -5,8 +5,8 @@
     "jq-wasm": "0.0.1",
     "main": "dist/jq.browser.js",
     "scripts": {
-        "build:dev": "make browser",
-        "build:full": "make build_deps && make browser",
+        "build:dev": "source /opt/emsdk/emsdk_env.sh && make browser",
+        "build:full": "source /opt/emsdk/emsdk_env.sh && make build_deps && make browser",
         "install": "npm run build:full",
         "start": "pushd test_server && node index"
     },

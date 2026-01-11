@@ -14,4 +14,4 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(2956, () => console.log("Listening on 2956..."));
+server.listen(2956, () => console.log("http://localhost:2956/index.html"));

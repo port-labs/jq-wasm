@@ -3,6 +3,8 @@ name: Publish @port-labs/jq-wasm
 on:
   release:
     types: [created]
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   publish-npm:
@@ -18,7 +20,6 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
           cache: "npm"
-      - run: npm ci
       - run: npm publish --access=public --tag=next
         if: ${{ github.event.release.prerelease }}
         env:

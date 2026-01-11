@@ -1,5 +1,9 @@
 name: Publish @port-labs/jq-wasm
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 on:
   release:
     types: [created]

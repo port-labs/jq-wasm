@@ -26,7 +26,6 @@ $(WASM_OUTPUT): $(ALL_SOURCES) | $(OUT_DIR)
 		-o $@
 
 build_deps:
-	cd ./deps/jq && make clean
 	cd ./deps/jq && git submodule update --init
 	cd ./deps/jq && autoreconf -i
 	cd ./deps/jq && ./configure --with-oniguruma=builtin

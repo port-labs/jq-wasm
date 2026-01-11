@@ -20,12 +20,12 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
           cache: "npm"
-      - run: bash install_emscripten.sh && npm install
-      - run: npm publish --access=public --tag=next --dry-run
+      - run: bash install_emscripten.sh && npm install && cp package.json dist/package.json && cp index.d.ts dist/index.d.ts
+      - run: npm publish ./dist --access=public --tag=next --dry-run
         if: ${{ github.event.release.prerelease }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish --access=public --dry-run
+      - run: npm publish ./dist --access=public --dry-run
         if: ${{ !github.event.release.prerelease }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

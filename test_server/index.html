@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jq WebAssembly Test</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --border: #30363d;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --accent: #58a6ff;
+        --success: #3fb950;
+        --error: #f85149;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--accent), #a371f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .status.loading {
+        background: rgba(88, 166, 255, 0.15);
+        color: var(--accent);
+      }
+
+      .status.ready {
+        background: rgba(63, 185, 80, 0.15);
+        color: var(--success);
+      }
+
+      .status.error {
+        background: rgba(248, 81, 73, 0.15);
+        color: var(--error);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .status.loading .status-dot {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      textarea {
+        width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.9rem;
+        padding: 1rem;
+        resize: vertical;
+        min-height: 120px;
+        outline: none;
+      }
+
+      textarea::placeholder {
+        color: var(--text-muted);
+      }
+
+      .filter-input {
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+      }
+
+      .filter-input::before {
+        content: "jq";
+        color: var(--accent);
+        font-weight: 600;
+        margin-right: 0.75rem;
+      }
+
+      .filter-input input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.95rem;
+        padding: 1rem 0;
+        outline: none;
+      }
+
+      .filter-input input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      button {
+        background: var(--accent);
+        color: var(--bg);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      button.secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .output {
+        min-height: 100px;
+        padding: 1rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .output.error {
+        color: var(--error);
+      }
+
+      .output.success {
+        color: var(--success);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>jq WebAssembly</h1>
+      <p class="subtitle">Run jq filters directly in your browser</p>
+
+      <div id="status" class="status loading">
+        <span class="status-dot"></span>
+        <span>Loading WebAssembly module...</span>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">JSON Input</div>
+        <textarea
+          id="input"
+          placeholder='{"name": "Alice", "items": [1, 2, 3]}'
+        ></textarea>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Filter</div>
+        <div class="filter-input">
+          <input type="text" id="filter" placeholder=".name" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="run" disabled>Run Filter</button>
+        <button id="clear" class="secondary">Clear</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Output</div>
+        <div id="output" class="output">Waiting for input...</div>
+      </div>
+    </div>
+
+    <script src="jq.browser.js"></script>
+    <script>
+      let Module = null;
+      let jqExec = null;
+      let jqExecAll = null;
+      let jqGetError = null;
+      let jqFreeResult = null;
+
+      const statusEl = document.getElementById("status");
+      const inputEl = document.getElementById("input");
+      const filterEl = document.getElementById("filter");
+      const outputEl = document.getElementById("output");
+      const runBtn = document.getElementById("run");
+      const clearBtn = document.getElementById("clear");
+
+      // Initialize
+      async function init() {
+        try {
+          Module = await createJqModule();
+
+          jqExec = Module.cwrap("jq_exec", "number", [
+            "string",
+            "string",
+            "number",
+          ]);
+          jqExecAll = Module.cwrap("jq_exec_all", "number", [
+            "string",
+            "string",
+            "number",
+          ]);
+          jqGetError = Module.cwrap("jq_get_error", "string", []);
+          jqFreeResult = Module.cwrap("jq_free_result", null, ["number"]);
+
+          statusEl.className = "status ready";
+          statusEl.innerHTML =
+            '<span class="status-dot"></span><span>Ready</span>';
+          runBtn.disabled = false;
+
+          // Set default example
+          inputEl.value = '{"name": "Alice", "items": [1, 2, 3]}';
+          filterEl.value = ".name";
+        } catch (e) {
+          statusEl.className = "status error";
+          statusEl.innerHTML = `<span class="status-dot"></span><span>Error: ${e.message}</span>`;
+          console.error("Failed to initialize jq:", e);
+        }
+      }
+
+      // Run jq filter
+      function runFilter() {
+        const input = inputEl.value.trim();
+        const filter = filterEl.value.trim();
+
+        if (!input) {
+          outputEl.textContent = "Please enter JSON input";
+          outputEl.className = "output error";
+          return;
+        }
+
+        if (!filter) {
+          outputEl.textContent = "Please enter a filter";
+          outputEl.className = "output error";
+          return;
+        }
+
+        try {
+          const resultPtr = jqExec(input, filter, 10);
+
+          if (!resultPtr) {
+            const error = jqGetError();
+            outputEl.textContent = error || "Unknown error";
+            outputEl.className = "output error";
+            return;
+          }
+
+          const result = Module.UTF8ToString(resultPtr);
+          jqFreeResult(resultPtr);
+
+          // Pretty print JSON
+          try {
+            const parsed = JSON.parse(result);
+            outputEl.textContent = JSON.stringify(parsed, null, 2);
+          } catch {
+            outputEl.textContent = result;
+          }
+          outputEl.className = "output success";
+        } catch (e) {
+          outputEl.textContent = e.message;
+          outputEl.className = "output error";
+        }
+      }
+
+      // Event listeners
+      runBtn.addEventListener("click", runFilter);
+
+      clearBtn.addEventListener("click", () => {
+        inputEl.value = "";
+        filterEl.value = "";
+        outputEl.textContent = "Waiting for input...";
+        outputEl.className = "output";
+      });
+
+      // Run on Enter key in filter input
+      filterEl.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          runFilter();
+        }
+      });
+
+      // Start initialization
+      init();
+    </script>
+  </body>
+</html>

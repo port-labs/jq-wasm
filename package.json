@@ -2,8 +2,7 @@
     "name": "@port-labs/jq-wasm",
     "version": "0.0.1",
     "description": "WASM bindings for JQ",
-    "jq-wasm": "0.0.1",
-    "main": "dist/jq.browser.js",
+    "main": "index.js",
     "scripts": {
         "build:dev": "bash -c '. /opt/emsdk/emsdk_env.sh && make browser'",
         "build:full": "bash -c '. /opt/emsdk/emsdk_env.sh && make build_deps && make browser'",

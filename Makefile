@@ -26,12 +26,11 @@ $(WASM_OUTPUT): $(ALL_SOURCES) | $(OUT_DIR)
 		-o $@
 
 build_deps:
-	cd ./deps/jq &> /dev/null && \
-	make clean && \
-	git submodule update --init && \
-	autoreconf -i && \
-	./configure --with-oniguruma=builtin && \
-	make src/builtin.inc && \
+	cd ./deps/jq && make clean
+	cd ./deps/jq && git submodule update --init
+	cd ./deps/jq && autoreconf -i
+	cd ./deps/jq && ./configure --with-oniguruma=builtin
+	cd ./deps/jq && make src/builtin.inc
 	echo "finished building jq"
 
 # Source files from jq library (excluding main.c and jq_test.c)

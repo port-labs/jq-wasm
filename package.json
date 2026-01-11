@@ -1,0 +1,26 @@
+{
+    "name": "@port-labs/jq-wasm",
+    "version": "v0.0.1",
+    "description": "WASM bindings for JQ",
+    "jq-wasm": "0.0.1",
+    "main": "dist/jq.browser.js",
+    "scripts": {
+        "build:dev": "make browser",
+        "build:full": "make build_deps && make browser",
+        "install": "npm run build:full",
+        "start": "pushd test_server && node index"
+    },
+    "keywords": [
+        "jq",
+        "binding",
+        "wasm"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:port-labs/jq-wasm.git"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": ">=6.0.0"
+    }
+}

@@ -25,7 +25,7 @@ $(WASM_OUTPUT): $(ALL_SOURCES) | $(OUT_DIR)
 		$(ALL_SOURCES) \
 		-o $@
 
-asd:
+build_deps:
 	pushd ./deps/jq &> /dev/null && \
 	make clean && \
 	git submodule update --init && \

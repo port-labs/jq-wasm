@@ -1,0 +1,29 @@
+name: Publish @port-labs/jq-wasm
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install node-gyp deps
+        run: sudo apt-get install -y autoconf make libtool automake
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+          cache: "npm"
+      - run: npm ci
+      - run: npm publish --access=public --tag=next
+        if: ${{ github.event.release.prerelease }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: npm publish --access=public
+        if: ${{ !github.event.release.prerelease }}
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

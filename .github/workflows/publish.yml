@@ -25,11 +25,11 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: "npm"
       - run: bash install_emscripten.sh && npm install && cp dist.package.json dist/package.json && cp index.d.ts dist/index.d.ts
-      - run: npm publish ./dist --access=public --tag=next --dry-run
+      - run: npm publish ./dist --access=public --tag=next
         if: ${{ github.event.release.prerelease }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - run: npm publish ./dist --access=public --dry-run
+      - run: npm publish ./dist --access=public
         if: ${{ !github.event.release.prerelease }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

@@ -35,17 +35,39 @@ declare module "@port-labs/jq-wasm" {
   export type jq_wasm_version = () => string;
   export type JqModule = WebAssembly.Module & {
     cwrap: <
-      TName extends "jq_exec" | "jq_get_error" | "jq_free_result",
+      TName extends
+        | "jq_exec"
+        | "jq_get_error"
+        | "jq_free_result"
+        | "jq_has_error"
+        | "jq_validate_filter"
+        | "jq_wasm_version",
       TReturn extends TName extends "jq_exec"
-        ? "number"
+        ? number
         : TName extends "jq_get_error"
-        ? "string"
-        : null,
+        ? string
+        : TName extends "jq_free_result"
+        ? void
+        : TName extends "jq_has_error"
+        ? number
+        : TName extends "jq_validate_filter"
+        ? number
+        : TName extends "jq_wasm_version"
+        ? string
+        : never,
       TArgs extends TName extends "jq_exec"
         ? [string, string]
         : TName extends "jq_get_error"
         ? []
-        : [number]
+        : TName extends "jq_free_result"
+        ? [number]
+        : TName extends "jq_has_error"
+        ? []
+        : TName extends "jq_validate_filter"
+        ? [string]
+        : TName extends "jq_wasm_version"
+        ? []
+        : never
     >(
       functionName: TName,
       returnType: TReturn,
@@ -54,7 +76,17 @@ declare module "@port-labs/jq-wasm" {
       ? jq_exec
       : TName extends "jq_get_error"
       ? jq_get_error
-      : jq_free_result;
+      : TName extends "jq_free_result"
+      ? jq_free_result
+      : TName extends "jq_has_error"
+      ? jq_has_error
+      : TName extends "jq_validate_filter"
+      ? jq_validate_filter
+      : TName extends "jq_wasm_version"
+      ? jq_wasm_version
+      : never;
+
+    UTF8ToString: (pointer: number) => string;
   };
   export default function createJqModule(options: {
     locateFile: (path: string) => string;

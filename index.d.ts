@@ -43,20 +43,20 @@ declare module "@port-labs/jq-wasm" {
         | "jq_validate_filter"
         | "jq_wasm_version",
       TReturn extends TName extends "jq_exec"
-        ? number
+        ? "number"
         : TName extends "jq_get_error"
-        ? string
+        ? "string"
         : TName extends "jq_free_result"
-        ? void
+        ? "void"
         : TName extends "jq_has_error"
-        ? number
+        ? "number"
         : TName extends "jq_validate_filter"
-        ? number
+        ? "number"
         : TName extends "jq_wasm_version"
-        ? string
+        ? "string"
         : never,
       TArgs extends TName extends "jq_exec"
-        ? [string, string]
+        ? ["string", "string"]
         : TName extends "jq_get_error"
         ? []
         : TName extends "jq_free_result"
@@ -64,7 +64,7 @@ declare module "@port-labs/jq-wasm" {
         : TName extends "jq_has_error"
         ? []
         : TName extends "jq_validate_filter"
-        ? [string]
+        ? ["string"]
         : TName extends "jq_wasm_version"
         ? []
         : never

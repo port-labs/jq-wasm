@@ -1,6 +1,6 @@
 {
     "name": "@port-labs/jq-wasm",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "WASM bindings for JQ",
     "main": "index.js",
     "keywords": [
@@ -12,8 +12,5 @@
         "type": "git",
         "url": "git+ssh://git@github.com/port-labs/jq-wasm.git"
     },
-    "license": "MIT",
-    "engines": {
-        "node": ">=6.0.0"
-    }
+    "license": "MIT"
 }

@@ -1,6 +1,6 @@
 {
     "name": "@port-labs/jq-wasm",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "WASM bindings for JQ",
     "main": "index.js",
     "keywords": [

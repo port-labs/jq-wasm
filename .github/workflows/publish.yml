@@ -6,11 +6,12 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   publish-npm:
-    permissions:
-      id-token: write # Required for OIDC
-      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Install node-gyp deps

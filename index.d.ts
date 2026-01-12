@@ -25,5 +25,5 @@ declare module "@port-labs/jq-wasm" {
       ? jq_get_error
       : jq_free_result;
   };
-  export function createJqModule(): Promise<JqModule>;
+  export default function createJqModule(): Promise<JqModule>;
 }

@@ -86,8 +86,8 @@ EMFLAGS = \
 	-s WASM=1 \
 	-s MODULARIZE=1 \
 	-s EXPORT_NAME="createJqModule" \
-	-s EXPORTED_FUNCTIONS='["_jq_exec", "_jq_exec_all", "_jq_get_error", "_jq_has_error", "_jq_free_result", "_jq_validate_filter", "_jq_validate_json", "_jq_wasm_version", "_malloc", "_free"]' \
-	-s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap", "UTF8ToString", "stringToUTF8", "lengthBytesUTF8"]' \
+	-s EXPORTED_FUNCTIONS='["_jq_exec", "_jq_get_error", "_jq_has_error", "_jq_free_result", "_jq_validate_filter", "_jq_wasm_version"]' \
+	-s EXPORTED_RUNTIME_METHODS='["cwrap", "UTF8ToString", "stringToUTF8", "lengthBytesUTF8"]' \
 	-s ALLOW_MEMORY_GROWTH=1 \
 	-s INITIAL_MEMORY=16777216 \
 	-s STACK_SIZE=1048576 \
@@ -104,9 +104,8 @@ else
 	CFLAGS += -O2 -DNDEBUG
 endif
 
-# Build for browser only (smaller output)
-.PHONY: browser
-browser: $(OUT_DIR)
+.PHONY: build
+build: $(OUT_DIR)
 	$(CC) $(CFLAGS) $(EMFLAGS) \
 		-s ENVIRONMENT='web,webview,worker' \
 		$(ALL_SOURCES) \
@@ -124,7 +123,7 @@ test: all
 	@node -e " \
 		const createJqModule = require('./$(OUT_DIR)/jq.js'); \
 		createJqModule().then(Module => { \
-			const exec = Module.cwrap('jq_exec', 'number', ['string', 'string', 'number']); \
+			const exec = Module.cwrap('jq_exec', 'number', ['string', 'string']); \
 			const getError = Module.cwrap('jq_get_error', 'string', []); \
 			const freeResult = Module.cwrap('jq_free_result', null, ['number']); \
 			const ptr = exec('{\"a\": 1}', '.a', 10); \

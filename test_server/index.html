@@ -248,7 +248,6 @@
     <script>
       let Module = null;
       let jqExec = null;
-      let jqExecAll = null;
       let jqGetError = null;
       let jqFreeResult = null;
 
@@ -264,16 +263,7 @@
         try {
           Module = await createJqModule();
 
-          jqExec = Module.cwrap("jq_exec", "number", [
-            "string",
-            "string",
-            "number",
-          ]);
-          jqExecAll = Module.cwrap("jq_exec_all", "number", [
-            "string",
-            "string",
-            "number",
-          ]);
+          jqExec = Module.cwrap("jq_exec", "number", ["string", "string"]);
           jqGetError = Module.cwrap("jq_get_error", "string", []);
           jqFreeResult = Module.cwrap("jq_free_result", null, ["number"]);
 
@@ -310,7 +300,7 @@
         }
 
         try {
-          const resultPtr = jqExec(input, filter, 10);
+          const resultPtr = jqExec(input, filter);
 
           if (!resultPtr) {
             const error = jqGetError();

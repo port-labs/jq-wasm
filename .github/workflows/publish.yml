@@ -24,7 +24,7 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
           cache: "npm"
-      - run: bash install_emscripten.sh && npm install && cp package.json dist/package.json && cp index.d.ts dist/index.d.ts
+      - run: bash install_emscripten.sh && npm install && cp dist.package.json dist/package.json && cp index.d.ts dist/index.d.ts
       - run: npm publish ./dist --access=public --tag=next --dry-run
         if: ${{ github.event.release.prerelease }}
         env:

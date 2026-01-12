@@ -1,34 +1,29 @@
 declare module "@port-labs/jq-wasm" {
-  type ExecOptions = { enableEnv?: boolean; throwOnError?: boolean };
-  type ExecAsyncOptions = {
-    enableEnv?: boolean;
-    throwOnError?: boolean;
-    timeoutSec?: number;
+  export type jq_exec = (input: string, filter: string) => number;
+  export type jq_get_error = () => string;
+  export type jq_free_result = (jqExecHandle: number) => void;
+  export type JqModule = WebAssembly.Module & {
+    cwrap: <
+      TName extends "jq_exec" | "jq_get_error" | "jq_free_result",
+      TReturn extends TName extends "jq_exec"
+        ? "number"
+        : TName extends "jq_get_error"
+        ? "string"
+        : null,
+      TArgs extends TName extends "jq_exec"
+        ? [string, string]
+        : TName extends "jq_get_error"
+        ? []
+        : [number]
+    >(
+      functionName: TName,
+      returnType: TReturn,
+      args: TArgs
+    ) => TName extends "jq_exec"
+      ? jq_exec
+      : TName extends "jq_get_error"
+      ? jq_get_error
+      : jq_free_result;
   };
-
-  export class JqExecError extends Error {}
-
-  export class JqExecCompileError extends Error {}
-
-  export function exec(
-    json: object,
-    input: string,
-    options?: ExecOptions
-  ): object | Array<any> | string | number | boolean | null;
-  export function execAsync(
-    json: object,
-    input: string,
-    options?: ExecAsyncOptions
-  ): Promise<object | Array<any> | string | number | boolean | null>;
-  export function setCacheSize(cacheSize: number): void;
-  export function renderRecursively(
-    json: object,
-    input: object | Array<any> | string | number | boolean | null,
-    execOptions?: ExecOptions
-  ): object | Array<any> | string | number | boolean | null;
-  export function renderRecursivelyAsync(
-    json: object,
-    input: object | Array<any> | string | number | boolean | null,
-    execOptions?: ExecAsyncOptions
-  ): Promise<object | Array<any> | string | number | boolean | null>;
+  export function createJqModule(): Promise<JqModule>;
 }

@@ -3,12 +3,6 @@
     "version": "0.0.2-alpha",
     "description": "WASM bindings for JQ",
     "main": "index.js",
-    "scripts": {
-        "build:dev": "bash -c '. /opt/emsdk/emsdk_env.sh && make build'",
-        "build:full": "bash -c '. /opt/emsdk/emsdk_env.sh && make build_deps && make build'",
-        "install": "bash -c 'npm run build:full'",
-        "start": "pushd test_server && node index"
-    },
     "keywords": [
         "jq",
         "binding",

@@ -1,9 +1,5 @@
 name: Publish @port-labs/jq-wasm
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: read
-
 on:
   release:
     types: [created]
@@ -12,6 +8,9 @@ on:
 
 jobs:
   publish-npm:
+    permissions:
+      id-token: write # Required for OIDC
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Install node-gyp deps

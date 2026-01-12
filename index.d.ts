@@ -47,7 +47,7 @@ declare module "@port-labs/jq-wasm" {
         : TName extends "jq_get_error"
         ? "string"
         : TName extends "jq_free_result"
-        ? "void"
+        ? null
         : TName extends "jq_has_error"
         ? "number"
         : TName extends "jq_validate_filter"
@@ -60,7 +60,7 @@ declare module "@port-labs/jq-wasm" {
         : TName extends "jq_get_error"
         ? []
         : TName extends "jq_free_result"
-        ? [number]
+        ? ["number"]
         : TName extends "jq_has_error"
         ? []
         : TName extends "jq_validate_filter"
